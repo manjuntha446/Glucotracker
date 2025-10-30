@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GlucoTracker - Smart Blood Glucose Monitoring</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Chart.js for glucose trend visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Chart.js annotation plugin -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-annotation@1.4.0/dist/chartjs-plugin-annotation.min.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header Section -->
+    <header class="header">
+      <div class="logo">
+        <i class="fas fa-heartbeat logo-icon"></i>
+        <h1>GlucoTracker</h1>
+      </div>
+      <nav class="nav-menu">
+        <ul>
+          <li><a href="#" class="active" data-page="dashboardPage">Dashboard</a></li>
+          <li><a href="#" data-page="historyPage">History</a></li>
+          <li><a href="#" data-page="profilePage">Profile &amp; Notifications</a></li>
+        </ul>
+      </nav>
+      <div class="user-menu">
+        <span class="user-name">Welcome, <span id="userName">Guest</span></span>
+        <button id="loginBtn" class="btn btn-primary">Login</button>
+        <button id="logoutBtn" class="btn btn-outline" style="display: none;">Logout</button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Login/Register Page -->
+      <section id="authPage" class="page">
+        <div class="auth-container">
+          <div class="auth-tabs">
+            <button class="auth-tab active" data-tab="login">Login</button>
+            <button class="auth-tab" data-tab="register">Register</button>
+          </div>
+          
+          <div id="loginForm" class="auth-form">
+            <h2>Login to Your Account</h2>
+            <form id="loginFormElement">
+              <div class="form-group">
+                <label for="loginEmail">Email</label>
+                <input type="email" id="loginEmail" required>
+              </div>
+              <div class="form-group">
+                <label for="loginPassword">Password</label>
+                <input type="password" id="loginPassword" autocomplete="current-password" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Login</button>
+            </form>
+          </div>
+          
+          <div id="registerForm" class="auth-form" style="display: none;">
+            <h2>Create New Account</h2>
+            <form id="registerFormElement">
+              <div class="form-group">
+                <label for="registerName">Full Name</label>
+                <input type="text" id="registerName" required>
+              </div>
+              <div class="form-group">
+                <label for="registerEmail">Email</label>
+                <input type="email" id="registerEmail" required>
+              </div>
+              <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <input type="password" id="registerPassword" autocomplete="new-password" required>
+              </div>
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="registerAge">Age</label>
+                  <input type="number" id="registerAge">
+                </div>
+                <div class="form-group half">
+                  <label for="registerGender">Gender</label>
+                  <select id="registerGender">
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="registerDiabetesType">Diabetes Type</label>
+                <select id="registerDiabetesType">
+                  <option value="">Select</option>
+                  <option value="type1">Type 1</option>
+                  <option value="type2">Type 2</option>
+                  <!-- <option value="gestational">Gestational</option>
+                  <option value="prediabetes">Prediabetes</option>
+                  <option value="other">Other</option> -->
+                </select>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Register</button>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Dashboard Page -->
+      <section id="dashboardPage" class="page" style="display: none;">
+        <div class="dashboard-header">
+          <h2>Blood Glucose Dashboard</h2>
+          <div class="date-display">
+            <i class="fas fa-calendar"></i>
+            <span id="currentDate"></span>
+          </div>
+        </div>
+        
+        <div class="dashboard-grid">
+          <!-- Glucose Entry Card -->
+          <div class="card glucose-entry-card">
+            <div class="card-header">
+              <h3>Enter Blood Glucose</h3>
+            </div>
+            <div class="card-body">
+              <form id="glucoseEntryForm">
+                <div class="form-group">
+                  <label for="glucoseValue">Glucose Reading</label>
+                  <div class="input-with-unit">
+                    <input type="number" id="glucoseValue" required>
+                    <select id="glucoseUnit">
+                      <option value="mg/dL">mg/dL</option>
+                      <option value="mmol/L">mmol/L</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="mealContext">Meal Context</label>
+                  <select id="mealContext">
+                    <option value="before_breakfast">Before Breakfast</option>
+                    <option value="after_breakfast">After Breakfast</option>
+                    <option value="before_lunch">Before Lunch</option>
+                    <option value="after_lunch">After Lunch</option>
+                    <option value="before_dinner">Before Dinner</option>
+                    <option value="after_dinner">After Dinner</option>
+                    <option value="bedtime">Bedtime</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="glucoseNotes">Notes</label>
+                  <textarea id="glucoseNotes" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Reading</button>
+              </form>
+            </div>
+          </div>
+          
+          <!-- Recommendations Card -->
+          <div class="card recommendations-card">
+            <div class="card-header">
+              <h3>Recommendations</h3>
+            </div>
+            <div class="card-body">
+              <div id="recommendationsContainer">
+                <div class="recommendation-item">
+                  <i class="fas fa-syringe recommendation-icon"></i>
+                  <div class="recommendation-content">
+                    <h4>Insulin Dosage</h4>
+                    <p id="insulinRecommendation">Enter a glucose reading to get insulin recommendations.</p>
+                  </div>
+                </div>
+                <div class="recommendation-item">
+                  <i class="fas fa-running recommendation-icon"></i>
+                  <div class="recommendation-content">
+                    <h4>Activity Suggestion</h4>
+                    <p id="activityRecommendation">Enter a glucose reading to get activity suggestions.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Statistics Card -->
+          <div class="card statistics-card">
+            <div class="card-header">
+              <h3>Statistics</h3>
+              <select id="statsTimeRange">
+                <option value="7">Last 7 Days</option>
+                <option value="14">Last 14 Days</option>
+                <option value="30">Last 30 Days</option>
+              </select>
+            </div>
+            <div class="card-body">
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <div class="stat-label">Average</div>
+                  <div class="stat-value" id="averageGlucose">--</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">Lowest</div>
+                  <div class="stat-value" id="lowestGlucose">--</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">Highest</div>
+                  <div class="stat-value" id="highestGlucose">--</div>
+                </div>
+                <div class="stat-item">
+                  <div class="stat-label">In Range</div>
+                  <div class="stat-value" id="inRangePercentage">--%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Physical Activity Entry Card -->
+          <div class="card activity-entry-card">
+            <div class="card-header">
+              <h3>Log Physical Activity</h3>
+            </div>
+            <div class="card-body">
+              <form id="activityEntryForm">
+                <div class="form-group">
+                  <label for="activityType">Activity Type</label>
+                  <input type="text" id="activityType" required placeholder="e.g., Running, Walking, Yoga">
+                </div>
+                <div class="form-group">
+                  <label for="activityDuration">Duration (minutes)</label>
+                  <input type="number" id="activityDuration" required min="1">
+                </div>
+                <div class="form-group">
+                  <label for="activityIntensity">Intensity</label>
+                  <select id="activityIntensity">
+                    <option value="low">Low</option>
+                    <option value="moderate">Moderate</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="activityCalories">Calories Burned (optional)</label>
+                  <input type="number" id="activityCalories" min="0">
+                </div>
+                <div class="form-group">
+                  <label for="activityNotes">Notes</label>
+                  <textarea id="activityNotes" rows="2"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Save Activity</button>
+              </form>
+            </div>
+          </div>
+
+          <!-- Recent Activities Card -->
+          <div class="card recent-activities-card">
+            <div class="card-header">
+              <h3>Recent Activities</h3>
+            </div>
+            <div class="card-body">
+              <ul id="recentActivitiesList" class="activity-list">
+                <!-- Recent activities will be populated here by JavaScript -->
+                <li class="empty-state-small">
+                  <i class="fas fa-running empty-icon"></i>
+                  <p>No activities logged yet.</p>
+                </li>
+              </ul>
+            </div>
+          </div>
+          
+          <!-- Glucose Trend Chart Card -->
+          <div class="card chart-card">
+            <div class="card-header">
+              <h3>Glucose Trends</h3>
+              <select id="chartTimeRange">
+                <option value="7">Last 7 Days</option>
+                <option value="14">Last 14 Days</option>
+                <option value="30">Last 30 Days</option>
+              </select>
+            </div>
+            <div class="card-body">
+              <canvas id="glucoseTrendChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- History Page -->
+      <section id="historyPage" class="page" style="display: none;">
+        <div class="page-header">
+          <h2>Glucose Reading History</h2>
+          <div class="filter-controls">
+            <select id="historyFilter">
+              <option value="all">All Readings</option>
+              <option value="high">High Readings</option>
+              <option value="normal">Normal Readings</option>
+              <option value="low">Low Readings</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="history-container">
+          <table class="history-table">
+            <thead>
+              <tr>
+                <th>Date & Time</th>
+                <th>Reading</th>
+                <th>Meal Context</th>
+                <th>Insulin</th>
+                <th>Notes</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="historyTableBody">
+              <!-- History entries will be populated here -->
+            </tbody>
+          </table>
+          <div id="noHistoryMessage" class="empty-state">
+            <i class="fas fa-clipboard-list empty-icon"></i>
+            <p>No glucose readings found. Start tracking your glucose levels to see your history.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Profile Page -->
+      <section id="profilePage" class="page" style="display: none;">
+        <div class="page-header">
+          <h2>User Profile</h2>
+          <button id="saveProfileBtn" class="btn btn-primary">Save Changes</button>
+        </div>
+        
+        <div class="profile-container">
+          <div class="profile-section">
+            <h3>Personal Information</h3>
+            <form id="personalInfoForm">
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="profileName">Full Name</label>
+                  <input type="text" id="profileName">
+                </div>
+                <div class="form-group half">
+                  <label for="profileEmail">Email</label>
+                  <input type="email" id="profileEmail" disabled>
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="profileAge">Age</label>
+                  <input type="number" id="profileAge">
+                </div>
+                <div class="form-group half">
+                  <label for="profileGender">Gender</label>
+                  <select id="profileGender">
+                    <option value="">Select</option>
+                    <option value="male">Male</option>
+                    <option value="female">Female</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="profileDiabetesType">Diabetes Type</label>
+                <select id="profileDiabetesType">
+                  <option value="">Select</option>
+                  <option value="type1">Type 1</option>
+                  <option value="type2">Type 2</option>
+                  <!-- <option value="gestational">Gestational</option>
+                  <option value="prediabetes">Prediabetes</option>
+                  <option value="other">Other</option> -->
+                </select>
+              </div>
+            </form>
+          </div>
+          
+          <div class="profile-section">
+            <h3>Glucose Target Range</h3>
+            <form id="targetRangeForm">
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="targetMin">Minimum (mg/dL)</label>
+                  <input type="number" id="targetMin" value="70">
+                </div>
+                <div class="form-group half">
+                  <label for="targetMax">Maximum (mg/dL)</label>
+                  <input type="number" id="targetMax" value="180">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="insulinSensitivity">Insulin Sensitivity Factor</label>
+                  <input type="number" id="insulinSensitivity" value="50">
+                </div>
+                <div class="form-group half">
+                  <label for="carbRatio">Carb Ratio</label>
+                  <input type="number" id="carbRatio" value="15">
+                </div>
+              </div>
+            </form>
+          </div>
+          
+          <div class="profile-section">
+            <h3>Guardian Contact</h3>
+            <form id="guardianForm">
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="guardianName">Name</label>
+                  <input type="text" id="guardianName">
+                </div>
+                <div class="form-group half">
+                  <label for="guardianRelationship">Relationship</label>
+                  <input type="text" id="guardianRelationship">
+                </div>
+              </div>
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="guardianEmail">Email</label>
+                  <input type="email" id="guardianEmail">
+                </div>
+                <div class="form-group half">
+                  <label for="guardianPhone">Phone</label>
+                  <input type="tel" id="guardianPhone">
+                </div>
+              </div>
+            </form>
+          </div>
+          
+          <div class="profile-section">
+            <h3>Notification Settings</h3>
+            <form id="notificationForm">
+              <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="emailNotifications" checked>
+                  Email Notifications
+                </label>
+              </div>
+              <div class="form-group checkbox-group">
+                <label class="checkbox-label">
+                  <input type="checkbox" id="smsNotifications">
+                  SMS Notifications
+                </label>
+              </div>
+              <div class="form-row">
+                <div class="form-group half">
+                  <label for="highAlertThreshold">High Alert Threshold (mg/dL)</label>
+                  <input type="number" id="highAlertThreshold" value="250">
+                </div>
+                <div class="form-group half">
+                  <label for="lowAlertThreshold">Low Alert Threshold (mg/dL)</label>
+                  <input type="number" id="lowAlertThreshold" value="60">
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer Section -->
+    <footer class="footer">
+      <p>&copy; 2023 GlucoTracker. All rights reserved.</p>
+    </footer>
+
+    <!-- Notification Toast -->
+    <div id="notificationToast" class="toast">
+      <div class="toast-content">
+        <i class="fas fa-check-circle toast-icon"></i>
+        <div class="toast-message">Notification message here</div>
+      </div>
+      <button class="toast-close">&times;</button>
+    </div>
+  </div>
+
+  <!-- JavaScript Files -->
+  <script src="js/api.js"></script>
+  <script src="js/voice.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/dashboard.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
