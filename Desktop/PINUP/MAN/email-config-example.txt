@@ -1,0 +1,47 @@
+# Email Configuration Example
+# Copy this to src/backend/.env and configure with your email settings
+
+# MongoDB Configuration
+MONGODB_URI=mongodb://localhost:27017/glucotracker
+
+# Server Configuration
+PORT=3000
+
+# Email Configuration (SMTP)
+# For Gmail:
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-app-password
+SMTP_SECURE=false
+FROM_EMAIL=your-email@gmail.com
+
+# For Outlook/Hotmail:
+# SMTP_HOST=smtp-mail.outlook.com
+# SMTP_PORT=587
+# SMTP_USER=your-email@outlook.com
+# SMTP_PASS=your-password
+# SMTP_SECURE=false
+# FROM_EMAIL=your-email@outlook.com
+
+# For Yahoo:
+# SMTP_HOST=smtp.mail.yahoo.com
+# SMTP_PORT=587
+# SMTP_USER=your-email@yahoo.com
+# SMTP_PASS=your-app-password
+# SMTP_SECURE=false
+# FROM_EMAIL=your-email@yahoo.com
+
+# Email Debug (set to "true" to log successful email sends)
+EMAIL_DEBUG=true
+
+# JWT Secret (for production)
+JWT_SECRET=your-secret-key-here
+
+# Instructions:
+# 1. Create a file named .env in the src/backend directory
+# 2. Copy the relevant email settings above
+# 3. Replace the placeholder values with your actual email credentials
+# 4. For Gmail, you'll need to use an App Password (not your regular password)
+# 5. Restart the backend server after making changes
+
